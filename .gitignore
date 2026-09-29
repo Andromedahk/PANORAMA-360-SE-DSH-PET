@@ -1,0 +1,6 @@
+research/
+captures/
+prepared/
+__pycache__/
+*.pyc
+
