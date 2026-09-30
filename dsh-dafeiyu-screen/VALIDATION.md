@@ -15,3 +15,4 @@
 - 通过 DSH CLI 安装仓库根目录到隔离 profile 成功；从已安装包入口加载真实 Cordis，GUI 成功响应并在卸载后释放。
 - 根目录打包检查通过：45 个文件，约 6 MB，不含研究目录、原始帧、node_modules 或运行环境。
 - 8 项 JavaScript 测试与 2 项 Python 测试通过。
+- 推送后，通过 DSH 的 GitHub URL 安装到隔离 profile 成功（约 13 秒）；使用现有 GitHub 登录的临时 Git 凭据配置，未改动全局配置。远程安装包版本为 1.1.1。
