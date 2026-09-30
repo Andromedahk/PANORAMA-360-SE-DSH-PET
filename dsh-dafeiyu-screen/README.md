@@ -6,15 +6,15 @@ Windows 展域 360 SE（PASE，USB 391a:1021）屏幕桌宠插件。白色房间
 
 可直接填写以下任意一种来源，无需先运行本项目安装脚本：
 
-- GitHub：`https://github.com/Andromedahk/kanali-open-screen.git`
+- GitHub：`https://github.com/Andromedahk/PANORAMA-360-SE-DSH-PET.git`
 - 本地仓库根目录：`D:/codex/鼠标垫支架/kanali-open-screen`
 - 解压后的插件目录（包含 package.json）；原 `dsh-dafeiyu-screen` 子目录也支持。
 
 安装后启用 **PANORAMA-360-SE-DSH-PET**，在插件配置页打开控制台。DSH 负责安装 YAML 等 npm 依赖；首次显示时插件自动检查并下载 Python，用户无需预装 Python 或运行 CMD。
 
-仓库目前为私有，使用 GitHub 地址需要 DSH/Git 已登录有访问权的 GitHub 账号；没有访问权时使用本地解压目录。选择 npm 镜像只影响 npm 依赖，不能绕过 GitHub 仓库权限。
+仓库为公开仓库，可直接使用上述 GitHub 地址安装，无需私有仓库访问权限。选择 npm 镜像只影响 npm 依赖，GitHub 下载仍需要网络能够访问 GitHub。
 
-`panorama-360-se-dsh-pet` 是包标识，目前未发布到 npm 注册表，不能只填写该包名安装。无需为了此入口额外公开仓库或发布 npm。
+`panorama-360-se-dsh-pet` 是包标识，目前未发布到 npm 注册表，不能只填写该包名安装。可直接使用 GitHub 地址或本地目录安装。
 
 升级请按 DSH 提示先卸载旧版，再安装新版；旧版 `dsh-dafeiyu-screen` 与新插件不要同时启用。用户数据保留在原数据目录。
 
