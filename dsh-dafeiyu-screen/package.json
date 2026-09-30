@@ -1,0 +1,48 @@
+{
+  "name": "dsh-dafeiyu-screen",
+  "version": "1.0.4",
+  "description": "大肥鱼展域屏：循环摇尾动画、独立余额更新与 Windows GUI",
+  "type": "module",
+  "license": "MIT",
+  "engines": {
+    "node": ">=22.19.0"
+  },
+  "exports": {
+    ".": "./index.js",
+    "./client": "./client.js"
+  },
+  "files": [
+    "*.js",
+    "*.html",
+    "*.md",
+    "LICENSE",
+    "cordis.patch.yml",
+    "assets",
+    "worker/*.py",
+    "worker/LICENSE",
+    "bin/python",
+    "scripts"
+  ],
+  "scripts": {
+    "start": "node standalone.js",
+    "test": "node --test tests/*.test.js"
+  },
+  "dependencies": {
+    "yaml": "2.8.1"
+  },
+  "dsh": {
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    },
+    "client": {
+      "platform": "web",
+      "immediately": true,
+      "inject": [
+        "@deepseek-ai/dsh-client-ui-plugin-manager"
+      ]
+    }
+  },
+  "devDependencies": {
+    "@deepseek-ai/cordis": "^4.0.4"
+  }
+}

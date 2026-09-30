@@ -1,0 +1,25 @@
+{
+  "width": 2240,
+  "height": 1080,
+  "fps": 30,
+  "frames": 60,
+  "seconds": 2,
+  "composition": {
+    "fishWidth": 1722,
+    "fishHeight": 1060,
+    "fishX": 227,
+    "fishY": 10,
+    "fishBottom": 1070,
+    "visibleUnionSource": [
+      88,
+      0,
+      1638,
+      1024
+    ]
+  },
+  "sources": {
+    "frames": "3aeb73fe0b870dcfb4a0896478e7ea992bd082927143e9c95c7169825959a307",
+    "room.png": "30de9669a3ad1b2267c1f7237418c5549fa7f1b59bad424c5d93aa418f0ee850"
+  },
+  "h264Sha256": "b79cbec3b1f52b2b7e481b3b28489e4c03636cc5424ac5d64317b1cff586218e"
+}

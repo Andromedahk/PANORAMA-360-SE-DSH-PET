@@ -73,3 +73,8 @@ python -X utf8 inspect_capture.py "captures\20260930-035439-db56dc"
 ## 来源与授权
 
 协议参考 [DXVSI/Tryx-Linux-GUI](https://github.com/DXVSI/Tryx-Linux-GUI)，MIT，固定参考提交 `4f1d9e591e2db6c3b2b4c13b56f38c64f942f5b6`。参见 `THIRD_PARTY.md` 和 `LICENSE`。Windows 传输和 Python 客户端在本项目实现。
+## 大肥鱼 DSH 插件
+
+新增 [大肥鱼 · 展域屏](dsh-dafeiyu-screen/README.md)：2240×1080 摇尾动画循环、独立余额更新、DSH 插件和 Windows 图形控制台。视频已经合成为 30 FPS、60 帧、2 秒；余额变化不会重传或切换视频。
+
+原始帧、水平平板版帧、背景和动画预览已整理到 [图片素材目录](art/dafeiyu/README.md)，包含全部 120 张透明帧、素材校验清单和重新合成方法。
