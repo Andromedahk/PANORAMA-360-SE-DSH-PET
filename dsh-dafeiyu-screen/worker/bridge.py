@@ -73,21 +73,22 @@ class Bridge:
     def status(self):
         return {'connected':self.client is not None,'playing':self.active,'error':self.error,'backupAvailable':(HOME/'restore-config.bin').exists(),'reconnecting':bool(self.desired and not self.active),'retrySeconds':max(0,round(self.next_retry-time.monotonic()))}
 
-    def connection_failed(self):
+    def connection_failed(self, error):
         self.close(cancel=False)
         self.failures+=1
         self.next_retry=time.monotonic()+min(30,2**min(self.failures,5))
-        self.error='屏幕连接中断，正在自动重连；请确认 USB 已连接且 KANALI 已退出'
+        reason=str(error).strip() or type(error).__name__
+        self.error=f'正在自动重连：{reason[:300]}'
 
     def tick(self):
         if not self.desired: return
         if not self.active:
             if time.monotonic()<self.next_retry: return
             try: self.start_display(self.desired)
-            except Exception: self.connection_failed()
+            except Exception as error: self.connection_failed(error)
         elif time.monotonic()-self.last_ping>=2:
             try: self.client.ping(); self.last_ping=time.monotonic()
-            except Exception: self.connection_failed()
+            except Exception as error: self.connection_failed(error)
 
     def start_display(self, req):
         self.connect()
@@ -132,8 +133,8 @@ class Bridge:
             self.desired={k:req[k] for k in ('media','value','status') if k in req}
             if self.active: return self.status()
             try: return self.start_display(self.desired)
-            except Exception:
-                self.connection_failed()
+            except Exception as error:
+                self.connection_failed(error)
                 return self.status()
         if op=='restore':
             self.desired=None
@@ -147,8 +148,8 @@ class Bridge:
             if self.desired: self.desired.update(value=value,status=status)
             if not self.active: return {'bytes':0}
             try: return {'bytes':update(self.client,value,status)}
-            except Exception:
-                self.connection_failed()
+            except Exception as error:
+                self.connection_failed(error)
                 return {'bytes':0}
         if op=='verify':
             if not self.client: raise RuntimeError('Screen is not connected')

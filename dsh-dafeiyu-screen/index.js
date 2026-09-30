@@ -1,5 +1,5 @@
 // DSH hot-reloads the entry point; version the service import to refresh its module cache on upgrades.
-import { ScreenService, serve } from './service.js?v=1.1.3';
+import { ScreenService, serve } from './service.js?v=1.1.4';
 import { money, walletValues } from './balance.js';
 
 export const name='panorama-360-se-dsh-pet';
@@ -12,7 +12,7 @@ export async function apply(ctx) {
   // Optional injection keeps a manual API Key usable in minimal profiles too.
   ctx.inject(['deepseekAccount'], accountCtx=>{
     const reader=async()=>{
-      const b=await accountCtx.deepseekAccount.getBalance({version:'1.1.3',locale:'zh-CN',timezoneOffsetSeconds:-new Date().getTimezoneOffset()*60});
+      const b=await accountCtx.deepseekAccount.getBalance({version:'1.1.4',locale:'zh-CN',timezoneOffsetSeconds:-new Date().getTimezoneOffset()*60});
       if (b===null) return null;
       if (b.status!=='ready') throw new Error('DSH 余额查询失败，稍后重试');
       return {value:money([...walletValues(b.value,'balance'),...walletValues(b.bonusWallets,'balance',false)]),source:'DSH 登录账号'};

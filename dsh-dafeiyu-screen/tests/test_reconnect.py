@@ -24,6 +24,23 @@ class FakeClient:
         return b''
 
 class RecoveryTests(unittest.TestCase):
+    def test_startup_waits_for_kanali_exit_then_connects_automatically(self):
+        with tempfile.TemporaryDirectory() as d,patch.object(bridge,'HOME',pathlib.Path(d)):
+            FakeClient.uploaded=[];FakeClient.selected='original.mp4';FakeClient.layout=b''
+            media=pathlib.Path(d)/'test.h264';media.write_bytes(b'test-media')
+            b=bridge.Bridge()
+            with patch.object(bridge.screen,'Client',side_effect=RuntimeError('请先退出 KANALI')):
+                result=b.handle({'op':'start','media':str(media),'value':'12.34'})
+                self.assertTrue(result['reconnecting']);self.assertFalse(result['connected'])
+                self.assertIn('KANALI',result['error'])
+            # No second start command: the pending startup survives the conflict.
+            b.handle({'op':'update','value':'56.78','status':'UPDATED'})
+            with patch.object(bridge.screen,'Client',FakeClient):
+                b.next_retry=0;b.tick()
+                self.assertTrue(b.status()['playing']);self.assertIsNone(b.status()['error'])
+                self.assertIn(b'56.78',FakeClient.layout)
+                b.close()
+
     def test_disconnect_reconnect_reuses_video_and_keeps_latest_balance(self):
         with tempfile.TemporaryDirectory() as d,patch.object(bridge,'HOME',pathlib.Path(d)),patch.object(bridge.screen,'Client',FakeClient):
             FakeClient.uploaded=[];FakeClient.selected='original.mp4';FakeClient.layout=b''
