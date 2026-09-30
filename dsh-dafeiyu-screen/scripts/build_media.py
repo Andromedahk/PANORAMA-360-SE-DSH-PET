@@ -1,5 +1,5 @@
 """Compose supplied RGBA frames without altering their artwork; FFmpeg handles compositing."""
-import argparse, hashlib, json, pathlib, shutil, subprocess, tempfile, zipfile
+import argparse, hashlib, json, pathlib, shutil, subprocess, tempfile, zipfile, tarfile
 
 def source_hash(path):
     path = pathlib.Path(path)
@@ -14,14 +14,22 @@ def source_hash(path):
 
 def main():
     p = argparse.ArgumentParser()
-    p.add_argument('--frames', default=str(pathlib.Path(__file__).resolve().parents[1]/'assets/art/dafeiyu/horizontal-tablet/frames'), help='ZIP archive or folder containing frame_000.png through frame_059.png')
+    p.add_argument('--frames', default=str(pathlib.Path(__file__).resolve().parents[1]/'assets/art/dafeiyu/source-images.tar.xz'), help='Packaged TAR.XZ, ZIP archive or folder containing 60 frames')
     p.add_argument('--background', default=str(pathlib.Path(__file__).resolve().parents[1]/'assets/background.png'))
     p.add_argument('--ffmpeg', default=shutil.which('ffmpeg') or 'ffmpeg')
     a = p.parse_args()
     out = pathlib.Path(__file__).resolve().parents[1] / 'assets'
     out.mkdir(exist_ok=True)
     with tempfile.TemporaryDirectory(prefix='dafeiyu-') as tmp:
-        if pathlib.Path(a.frames).is_dir():
+        extension = 'png'
+        if a.frames.endswith('.tar.xz'):
+            extension = 'pam'
+            with tarfile.open(a.frames, 'r:xz') as archive:
+                for i in range(60):
+                    name = f'frame_{i:03d}.pam'
+                    data = archive.extractfile('horizontal-tablet/frames/' + name).read()
+                    pathlib.Path(tmp, name).write_bytes(data)
+        elif pathlib.Path(a.frames).is_dir():
             for i in range(60):
                 name = f'frame_{i:03d}.png'
                 shutil.copyfile(pathlib.Path(a.frames, name), pathlib.Path(tmp, name))
@@ -32,7 +40,7 @@ def main():
                     pathlib.Path(tmp, name).write_bytes(z.read(name))
         args = [a.ffmpeg, '-hide_banner', '-loglevel', 'error', '-nostdin', '-y',
                 '-loop', '1', '-framerate', '30', '-i', a.background,
-                '-framerate', '30', '-i', str(pathlib.Path(tmp, 'frame_%03d.png')),
+                '-framerate', '30', '-i', str(pathlib.Path(tmp, 'frame_%03d.' + extension)),
                 '-filter_complex', '[0:v]scale=2240:1080:force_original_aspect_ratio=increase,crop=2240:1080,setsar=1[bg];[1:v]scale=1755:1080[fish];[bg][fish]overlay=188:0:shortest=1,format=yuv420p[v]',
                 '-map', '[v]', '-frames:v', '60', '-an', '-c:v', 'libx264', '-preset', 'slow', '-crf', '18',
                 '-r', '30', '-g', '30', '-bf', '0', '-x264-params', 'scenecut=0:force-cfr=1', '-movflags', '+faststart', str(out/'tail-swing.mp4')]

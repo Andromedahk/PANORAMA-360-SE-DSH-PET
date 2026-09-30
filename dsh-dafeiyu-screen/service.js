@@ -69,7 +69,7 @@ export class ScreenService {
   constructor({accountReader=null,worker=new Worker(),mode='standalone'}={}) {
     this.worker=worker; this.accountReader=accountReader; this.mode=mode;
     this.settings={pollSeconds:30,autoStart:false};
-    this.state={value:null,source:'未读取',updatedAt:null,balanceError:null,screen:{connected:false,playing:false},busy:false};
+    this.state={value:null,source:'未读取',updatedAt:null,nextRefreshAt:null,balanceError:null,screen:{connected:false,playing:false},busy:false};
     this.timer=null; this.inflight=null; this.disposed=false; this.retrySeconds=0; this.enabled=false;
   }
   async init() {
@@ -84,7 +84,12 @@ export class ScreenService {
   }
   schedule() {
     clearTimeout(this.timer);
-    if (!this.disposed && this.enabled) this.timer=setTimeout(()=>void this.refresh(),Math.max(this.settings.pollSeconds,this.retrySeconds)*1000);
+    this.state.nextRefreshAt=null;
+    if (!this.disposed && this.enabled) {
+      const delay=Math.max(this.settings.pollSeconds,this.retrySeconds)*1000;
+      this.state.nextRefreshAt=new Date(Date.now()+delay).toISOString();
+      this.timer=setTimeout(()=>void this.refresh(),delay);
+    }
   }
   refresh() {
     if (this.inflight) return this.inflight;
@@ -132,7 +137,7 @@ export class ScreenService {
         this.state.screen=await this.worker.request('start',{media:join(ROOT,'assets','tail-swing.h264'),value:this.state.value||'--',status:this.overlayStatus()});
         this.enabled=true;void this.refresh();
       } else if (op==='stop'||op==='restore') {
-        this.enabled=false;clearTimeout(this.timer);
+        this.enabled=false;clearTimeout(this.timer);this.state.nextRefreshAt=null;
         this.state.screen=await this.worker.request(op);
       } else if (op==='saveKey'||op==='clearKey') {
         if (this.inflight) await this.inflight;
@@ -143,7 +148,7 @@ export class ScreenService {
     } finally {this.state.busy=false;}
   }
   async dispose() {
-    this.disposed=true;this.enabled=false;clearTimeout(this.timer);
+    this.disposed=true;this.enabled=false;clearTimeout(this.timer);this.state.nextRefreshAt=null;
     await this.worker.close();
   }
 }

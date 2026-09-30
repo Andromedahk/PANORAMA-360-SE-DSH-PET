@@ -5,6 +5,9 @@ function toast(message){$('toast').textContent=message;clearTimeout(toastTimer);
 function paint(s){
   $('amount').textContent=s.value??'--';$('balance').textContent=s.value===null?'等待更新':`¥ ${s.value}`;
   $('source').textContent=s.source;$('updated').textContent=s.updatedAt?new Date(s.updatedAt).toLocaleString('zh-CN'):'尚未读取';
+  $('nextRefresh').textContent=s.nextRefreshAt?`约 ${Math.max(0,Math.ceil((Date.parse(s.nextRefreshAt)-Date.now())/1000))} 秒后`:s.nextRefreshAt===undefined?'重启 DSH 后显示倒计时':'尚未开始 / 已停止';
+  $('intervalStatus').textContent=`当前间隔：${s.settings.pollSeconds} 秒 · 可设置 10–3600 秒`;
+  for(const b of document.querySelectorAll('[data-seconds]'))b.setAttribute('aria-pressed',String(Number(b.dataset.seconds)===s.settings.pollSeconds));
   $('error').textContent=s.screen.error||s.balanceError||'';
   $('previewTime').textContent=s.updatedAt?`${s.balanceError?'STALE':'UPDATED'} / ${new Date(s.updatedAt).toLocaleTimeString('en-GB',{hour12:false})}`:'WAITING FOR BALANCE';
   $('screenStatus').textContent=s.screen.playing?'屏幕正在显示':s.screen.reconnecting?'正在自动重连':s.screen.error?'屏幕连接异常':'未连接屏幕';
@@ -26,7 +29,12 @@ async function action(op,data={},message){
   finally{busy=false;}
 }
 for(const op of ['start','stop','restore','refresh','clearKey'])$(op).onclick=()=>action(op,{},({start:'动画已发送到屏幕，余额将自动更新',stop:'已释放连接；屏幕后续显示取决于待机设置',restore:'已恢复原显示',clearKey:'已移除 Key，重新读取 DSH 凭证'})[op]);
-$('save').onclick=()=>action('settings',{pollSeconds:Number($('interval').value),autoStart:$('autoStart').checked},'设置已保存');
+function saveSettings(){
+  if(!$('interval').reportValidity())return;
+  return action('settings',{pollSeconds:Number($('interval').value),autoStart:$('autoStart').checked},'刷新设置已保存并生效');
+}
+$('save').onclick=saveSettings;
+for(const b of document.querySelectorAll('[data-seconds]'))b.onclick=()=>{$('interval').value=b.dataset.seconds;void saveSettings();};
 $('keyForm').onsubmit=e=>{e.preventDefault();const key=$('key').value.trim();if(!key)return;$('key').value='';void action('saveKey',{key},'Key 已由 Windows 加密保存');};
 $('exit').onclick=async()=>{try{await api('exit',{});closed=true;clearTimeout(timer);$('screenStatus').textContent='控制台已退出';toast('控制台已退出，可以关闭页面');for(const b of document.querySelectorAll('button'))b.disabled=true;}catch(e){toast(e.message);}};
 async function poll(){if(closed)return;try{if(!busy)paint(await api('status'));}catch{$('screenStatus').textContent='控制台未连接';}finally{if(!closed)timer=setTimeout(poll,2000);}}

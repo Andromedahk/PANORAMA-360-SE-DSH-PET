@@ -1,99 +1,77 @@
 # PANORAMA-360-SE-DSH-PET
 
-独立的 Windows USB 屏幕内容传输工具，MIT 开源原型。适用于已实测的 **TRYX 展域 / PANORAMA 360 SE，USB `391a:1021`（RK PASE）**。
+在 **TRYX 展域 / PANORAMA 360 SE** 屏幕上显示大肥鱼摇尾桌宠，并在角色手中的平板上显示 DeepSeek 余额。提供网页控制台，可调整余额刷新时间、开始或停止显示，以及恢复原来的屏幕内容。
 
-## 在 DSH 官方“添加插件”窗口安装
+## 功能
 
-可直接填写以下任意一种来源，无需先运行本项目安装脚本：
+- 白色房间背景铺满屏幕，大肥鱼上下贴边，2 秒动画循环播放。
+- 余额显示在角色手中的平板上，采用大字号。
+- 余额独立刷新，无需重新切换视频。
+- 网页调整刷新间隔，支持 10 秒、30 秒、1 分钟、5 分钟快捷选项，以及 10–3600 秒自定义时间。
+- 自动保存设置；屏幕连接中断时自动尝试重连。
+- 图片素材全部包含在插件包内；运行环境按需下载，不捆绑 Node 或 Python。
 
-- GitHub：`https://github.com/Andromedahk/PANORAMA-360-SE-DSH-PET.git`
-- 本地仓库根目录：在安装框选择或填写你下载后解压的仓库目录（包含 `package.json`）
-- 解压后的插件目录（包含 package.json）；原 `dsh-dafeiyu-screen` 子目录也支持。
+## 使用条件
 
-安装后启用 **PANORAMA-360-SE-DSH-PET**，在插件配置页打开控制台。DSH 负责安装 YAML 等 npm 依赖；首次显示时插件自动检查并下载 Python，用户无需预装 Python 或运行 CMD。
+- Windows 10/11，64 位。
+- 通过 USB 连接的 PANORAMA 360 SE 屏幕。
+- 首次安装需联网，以下载缺少的依赖。
+- 使用前退出 KANALI 和其他占用屏幕的软件。
 
-仓库为公开仓库，可直接使用上述 GitHub 地址安装，无需私有仓库访问权限。选择 npm 镜像只影响 npm 依赖，GitHub 下载仍需要网络能够访问 GitHub。
+## 通过 DSH 安装
 
-`panorama-360-se-dsh-pet` 是包标识，目前未发布到 npm 注册表，不能只填写该包名安装。可直接使用 GitHub 地址或本地目录安装。
+1. 打开 DSH 的“插件”页面，点击“添加插件”。
+2. 输入以下公开仓库地址，点击“安装”：
 
-升级请按 DSH 提示先卸载旧版，再安装新版；旧版 `dsh-dafeiyu-screen` 与新插件不要同时启用。用户数据保留在原数据目录。
-
-
-## 已完成的实机验证
-
-- Windows 自带 `usbprint` 驱动直接双向通信，不需要 KANALI 运行，也不需要更换 USB 驱动。
-- 读取型号、固件版本、素材目录及当前显示配置。
-- 将 PNG 转为 2240 × 1080 H.264，分块上传并切换显示。
-- 测试图大小 323,797 字节，分为 262,144 和 61,653 字节两块；开始、每块和结束均收到成功响应。
-- 用户已确认实体屏幕显示 `OPEN SCREEN` 和四色条正常。
-- 测试完成后已恢复原素材选择和显示配置，并通过设备回读验证。
-- 实测设备固件：`v2.0.5.20260403`，设备应用：`v2.0.1.20260416`。
-
-这次没有安装 USBPcap，也没有截获原 KANALI 进程的流量：协议参考已有 MIT 开源实现，随后通过本机独立客户端的真实 USB 收发与实体显示验证。`captures/` 保存的是本工具的收发内容。
-
-## 使用
-
-1. 从系统托盘完全退出 KANALI。
-2. 双击 **启动屏幕工具.cmd**。
-3. 点击“选择文件”，然后点击“发送到屏幕”。
-4. 保持窗口打开可通过 Ping 维持屏幕连接。重新使用 KANALI 前先关闭本工具。
-
-需要 Windows、带 Tkinter 的 Python 3.10+、提供 `libx264` 的 FFmpeg。本机这些条件已经具备。优先使用 PATH 中的 FFmpeg；本机回退使用 KANALI 安装目录中已有的 FFmpeg。项目不附带 KANALI 程序、DLL、媒体或固件；在另一台电脑独立部署时请自行安装 FFmpeg。
-
-图片按比例完整放入画面，多余部分填黑；图片转换成 60 秒、30 fps 的 H.264 片段。支持选择 PNG/JPG/BMP/WebP、GIF、MP4/MKV/AVI/MOV/WebM。**静态 PNG 已实机验证，其他格式和长视频尚未实机验证。** 当前只提供整屏播放；未实现分屏、指标面板、实时桌面镜像或固件更新。
-
-“恢复测试前画面”使用本机 `captures/before-test-config.bin`，恢复原素材选择和显示设置。它不删除上传的测试素材，也不能恢复 KANALI 运行时的动态指标叠加；如需动态指标，请重新启动 KANALI。
-
-## 命令行
-
-在本目录运行：
-
-```powershell
-python -X utf8 screen.py devices
-python -X utf8 screen.py info
-python -X utf8 screen.py catalog
-python -X utf8 screen.py prepare "dsh-dafeiyu-screen/assets/preview.png"
-python -X utf8 screen.py send "dsh-dafeiyu-screen/assets/preview.png"
-python -X utf8 screen.py restore "captures\before-test-config.bin"
-python -X utf8 -m unittest -v
+```text
+https://github.com/Andromedahk/PANORAMA-360-SE-DSH-PET.git
 ```
 
-可用 `--ffmpeg ffmpeg` 指定转换工具。命令行完成后释放连接，不提供持续保活；长期使用请打开窗口版。
+3. 启用 **PANORAMA-360-SE-DSH-PET**，打开插件的配置页面或点击“打开独立控制台”。
+4. 确认屏幕连接正常，点击“开始显示”。首次使用会自动准备缺少的运行环境，请等待完成。
 
-## 通信记录
+也可以在官方安装框中选择解压后的插件目录。目录应包含 `package.json`。目前没有发布 npm 包，请使用仓库地址或本地目录安装，不要仅填写包名。
 
-每次连接在 `captures/时间-随机号/` 下生成日志：
+如果安装了旧版 `dsh-dafeiyu-screen`，请先卸载旧版，避免两个插件同时运行。
 
-- `events.jsonl`：方向、时间、长度和对应文件。
-- `*-out.bin`、`*-in.bin`：实际发出的帧和实际读到的字节。
-- `previous-config.bin`：切换前的配置；窗口版另存每次上传前配置。
+## 独立使用
 
-离线解码，不连接屏幕：
+解压 Windows 安装包，双击 `启动PANORAMA.cmd`。程序会检查依赖并打开网页控制台。若要安装到 DSH，双击 `安装到DSH.cmd`。
 
-```powershell
-python -X utf8 inspect_capture.py "captures\20260930-035439-db56dc"
-```
+控制台地址：**http://127.0.0.1:18432/**。它只在本机提供访问。关闭网页后后台仍会继续运行；独立模式请点击“退出控制台”，DSH 模式请停用插件。
 
-抓取中可能包含本机设备标识、素材名及完整图像内容，已默认排除在 Git 之外。窗口空闲保活不写逐包日志，避免长期产生大量文件。
+## 调整余额刷新时间
 
-## 源码
+1. 在网页的“余额刷新时间”区域选择快捷选项，或输入自定义秒数。
+2. 自定义时间后点击“保存刷新设置”；快捷选项会直接保存。
+3. 页面显示当前间隔和距离下次刷新的时间。设置保存后立即生效，下次启动仍会保留。
 
-- `winusbprint.py`：Windows 设备发现、重叠读写、超时取消和单实例占用。
-- `protocol.py`：TRYX 帧与最小 Protobuf 编解码，保留配置中的未知字段。
-- `screen.py`：设备查询、转换、上传、切换与恢复。
-- `gui.py`：中文桌面窗口，单工作线程串行操作设备。
-- `inspect_capture.py`：本地收发记录解码。
-- `PROTOCOL.md`：通信协议与验证边界。
+点击“立即更新余额”可马上刷新。勾选“控制台或 DSH 插件启动后自动显示”，保存后，下次启动会自动播放。
 
-当前是可运行原型，没有打包安装程序，也没有发布到公开仓库。断连或确认超时不会自动重传；失败后先读取设备状态再决定下一步，不能把“已经发送”当作“已经成功”。
+## 余额来源
 
-## 来源与授权
+默认使用 DSH 当前登录的 DeepSeek 账号。也可以在网页展开“使用 DeepSeek API Key”，输入并保存自己的 Key；保存的 Key 优先使用。点击“移除已保存的 Key”可切回 DSH 登录账号。
 
-协议参考 [DXVSI/Tryx-Linux-GUI](https://github.com/DXVSI/Tryx-Linux-GUI)，MIT，固定参考提交 `4f1d9e591e2db6c3b2b4c13b56f38c64f942f5b6`。参见 `THIRD_PARTY.md` 和 `LICENSE`。Windows 传输和 Python 客户端在本项目实现。
-## PANORAMA-360-SE-DSH-PET
+Key 由 Windows 加密保存，不会发送给屏幕。网络异常时保留最后一次成功获取的余额，并显示 STALE；恢复网络后继续刷新。
 
-新增 [PANORAMA-360-SE-DSH-PET](dsh-dafeiyu-screen/README.md)：2240×1080 摇尾动画循环、独立余额更新、DSH 插件和 Windows 图形控制台。视频已经合成为 30 FPS、60 帧、2 秒；余额变化不会重传或切换视频。
+## 图片与动画
 
-原始帧、水平平板版帧、背景和动画预览已整理到 [图片素材目录](dsh-dafeiyu-screen/assets/art/dafeiyu/README.md)，包含全部 120 张透明帧、素材校验清单和重新合成方法。
+所有原始帧、水平平板修订帧、背景、参考图与预览素材都随包提供，以 `assets/art/dafeiyu/source-images.tar.xz` 随插件保存（仓库安装时位于 `dsh-dafeiyu-screen` 子目录）。图片采用无损压缩保存，不依赖作者电脑上的任何文件。日常使用无需解压素材或重新生成视频。需要编辑图片时，在插件目录运行 `python scripts/unpack_art.py --output restored-art`，即可恢复全部 PNG；此操作不需要第三方 Python 库。
 
-插件 1.1.0 使用确认的全屏白色房间背景和上下贴边角色；支持 USB 断线自动重连。精简安装包不捆绑 Node/Python，通过依赖表按需下载、校验并缓存。详见 [依赖表](dsh-dafeiyu-screen/DEPENDENCIES.md)。
+## 常见问题
+
+**屏幕不亮或提示重连**：确认 USB 连接正常，退出 KANALI 和其他屏幕软件，稍候等待重连；也可点击“停止连接”后重新“开始显示”。
+
+**余额没有显示**：确认 DSH 已登录，或配置有效 API Key；点击“立即更新余额”，查看页面错误提示。
+
+**首次准备依赖失败**：确认网络可访问 GitHub、npm、nodejs.org 和 python.org，然后重试。下载缓存会保留。完整列表见 [依赖表](dsh-dafeiyu-screen/DEPENDENCIES.md)。
+
+**控制台已被占用**：不要同时启用旧插件、新插件和独立控制台。保留一个运行实例即可。
+
+**如何恢复原显示**：在“恢复屏幕原来的内容”中点击“恢复原显示”。
+
+**如何升级**：按 DSH 提示先卸载旧版本，再用同一仓库地址安装新版，并重新启动 DSH，使后台加载新版本。卸载插件不会主动删除已保存的设置与 Key。
+
+## 许可证
+
+代码采用 MIT 许可证。角色图片的权利说明见 [素材与第三方说明](dsh-dafeiyu-screen/THIRD_PARTY.md)。

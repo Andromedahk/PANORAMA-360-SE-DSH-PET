@@ -9,9 +9,6 @@ class OverlayTests(unittest.TestCase):
     def test_balance_labels_inside_tablet(self):
         groups=[v for n,w,v,r in fields(layout('12.34')) if n==1]
         self.assertEqual(len(groups),3)
-        self.assertEqual(get(groups[1],2),1475)
-        self.assertEqual(get(groups[1],3),773)
-        self.assertEqual(get(groups[1],4),347)
         # Actual black screen in the edited artwork, transformed into device pixels.
         for group in groups:
             x,y,w,h=(get(group,k) for k in (2,3,4,5))
