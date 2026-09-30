@@ -7,6 +7,7 @@ import { existsSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { homedir } from 'node:os';
+import {ensurePython} from './runtime.js';
 import { fetchBalance, resolveLocalCredential } from './balance.js';
 
 export const ROOT = dirname(fileURLToPath(import.meta.url));
@@ -14,12 +15,14 @@ export const HOME = process.env.DAFEIYU_HOME || join(process.env.LOCALAPPDATA ||
 export const PORT = Number(process.env.DAFEIYU_PORT || 18432);
 
 export class Worker {
-  constructor() { this.child=null; this.seq=0; this.pending=new Map(); }
-  launch() {
+  constructor() { this.child=null; this.closed=false; this.seq=0; this.pending=new Map(); }
+  async launch() {
     if (this.child) return;
     if (process.platform !== 'win32') throw new Error('屏幕通信需要在连接 USB 的 Windows 电脑上运行');
-    const embedded=join(ROOT,'bin','python','python.exe');
-    this.child=spawn(existsSync(embedded)?embedded:(process.env.DAFEIYU_PYTHON || 'python'),['-X','utf8',join(ROOT,'worker','bridge.py')],{windowsHide:true,stdio:['pipe','pipe','pipe']});
+    const python=await ensurePython();
+    if (this.closed) throw new Error('插件已停止');
+    if (this.child) return;
+    this.child=spawn(python,['-X','utf8',join(ROOT,'worker','entry.py')],{windowsHide:true,stdio:['pipe','pipe','pipe']});
     const child=this.child;
     createInterface({input:child.stdout}).on('line',line=>{
       try {
@@ -38,16 +41,17 @@ export class Worker {
     };
     child.on('error',fail); child.on('exit',fail); child.stdin.on('error',()=>{});
   }
-  request(op,data={}) {
-    try { this.launch(); } catch(e) {return Promise.reject(e);}
+  async request(op,data={}) {
+    try { await this.launch(); } catch(e) {return Promise.reject(e);}
     const id=++this.seq;
     return new Promise((resolve,reject)=>{
-      const timer=setTimeout(()=>{this.pending.delete(id); reject(new Error('屏幕操作超时，请停止后重新连接')); this.child?.kill();},op==='start'?120000:15000);
+      const timer=setTimeout(()=>{this.pending.delete(id); reject(new Error('屏幕操作超时，请停止后重新连接')); this.child?.kill();},120000);
       this.pending.set(id,{resolve,reject,timer});
       this.child.stdin.write(JSON.stringify({id,op,...data})+'\n');
     });
   }
   async close() {
+    this.closed=true;
     const c=this.child;
     if (!c) return;
     c.stdin.end();
@@ -105,7 +109,7 @@ export class ScreenService {
       this.state.balanceError=e.message;
       this.retrySeconds=e.retrySeconds || Math.min(300,Math.max(30,this.retrySeconds*2));
     }
-    if (!this.disposed && this.state.screen.playing) {
+    if (!this.disposed && (this.state.screen.playing || this.state.screen.reconnecting)) {
       try {await this.worker.request('update',{value:this.state.value||'--',status:this.overlayStatus()});}
       catch(e) {this.state.screen.error=e.message;}
     }

@@ -2,6 +2,23 @@
 
 独立的 Windows USB 屏幕内容传输工具，MIT 开源原型。适用于已实测的 **TRYX 展域 / PANORAMA 360 SE，USB `391a:1021`（RK PASE）**。
 
+## 在 DSH 官方“添加插件”窗口安装
+
+可直接填写以下任意一种来源，无需先运行本项目安装脚本：
+
+- GitHub：`https://github.com/Andromedahk/kanali-open-screen.git`
+- 本地仓库根目录：`D:/codex/鼠标垫支架/kanali-open-screen`
+- 解压后的插件目录（包含 package.json）；原 `dsh-dafeiyu-screen` 子目录也支持。
+
+安装后启用 **PANORAMA-360-SE-DSH-PET**，在插件配置页打开控制台。DSH 负责安装 YAML 等 npm 依赖；首次显示时插件自动检查并下载 Python，用户无需预装 Python 或运行 CMD。
+
+仓库目前为私有，使用 GitHub 地址需要 DSH/Git 已登录有访问权的 GitHub 账号；没有访问权时使用本地解压目录。选择 npm 镜像只影响 npm 依赖，不能绕过 GitHub 仓库权限。
+
+`panorama-360-se-dsh-pet` 是包标识，目前未发布到 npm 注册表，不能只填写该包名安装。无需为了此入口额外公开仓库或发布 npm。
+
+升级请按 DSH 提示先卸载旧版，再安装新版；旧版 `dsh-dafeiyu-screen` 与新插件不要同时启用。用户数据保留在原数据目录。
+
+
 ## 已完成的实机验证
 
 - Windows 自带 `usbprint` 驱动直接双向通信，不需要 KANALI 运行，也不需要更换 USB 驱动。
@@ -73,8 +90,10 @@ python -X utf8 inspect_capture.py "captures\20260930-035439-db56dc"
 ## 来源与授权
 
 协议参考 [DXVSI/Tryx-Linux-GUI](https://github.com/DXVSI/Tryx-Linux-GUI)，MIT，固定参考提交 `4f1d9e591e2db6c3b2b4c13b56f38c64f942f5b6`。参见 `THIRD_PARTY.md` 和 `LICENSE`。Windows 传输和 Python 客户端在本项目实现。
-## 大肥鱼 DSH 插件
+## PANORAMA-360-SE-DSH-PET
 
-新增 [大肥鱼 · 展域屏](dsh-dafeiyu-screen/README.md)：2240×1080 摇尾动画循环、独立余额更新、DSH 插件和 Windows 图形控制台。视频已经合成为 30 FPS、60 帧、2 秒；余额变化不会重传或切换视频。
+新增 [PANORAMA-360-SE-DSH-PET](dsh-dafeiyu-screen/README.md)：2240×1080 摇尾动画循环、独立余额更新、DSH 插件和 Windows 图形控制台。视频已经合成为 30 FPS、60 帧、2 秒；余额变化不会重传或切换视频。
 
 原始帧、水平平板版帧、背景和动画预览已整理到 [图片素材目录](art/dafeiyu/README.md)，包含全部 120 张透明帧、素材校验清单和重新合成方法。
+
+插件 1.1.0 使用确认的全屏白色房间背景和上下贴边角色；支持 USB 断线自动重连。精简安装包不捆绑 Node/Python，通过依赖表按需下载、校验并缓存。详见 [依赖表](dsh-dafeiyu-screen/DEPENDENCIES.md)。

@@ -8,35 +8,37 @@
     "node": ">=22.19.0"
   },
   "exports": {
-    ".": "./index.js",
-    "./client": "./client.js"
+    ".": "./dsh-dafeiyu-screen/index.js",
+    "./client": "./dsh-dafeiyu-screen/client.js"
   },
   "files": [
-    "*.js",
-    "*.html",
-    "*.md",
+    "README.md",
     "LICENSE",
-    "cordis.patch.yml",
-    "assets",
-    "worker/*.py",
-    "worker/LICENSE",
-    "scripts",
-    "dependencies.json",
-    "package-lock.json",
-    "*.cmd",
-    "npm-shrinkwrap.json"
+    "npm-shrinkwrap.json",
+    "dsh-dafeiyu-screen/package.json",
+    "dsh-dafeiyu-screen/*.js",
+    "dsh-dafeiyu-screen/*.html",
+    "dsh-dafeiyu-screen/*.md",
+    "dsh-dafeiyu-screen/LICENSE",
+    "dsh-dafeiyu-screen/cordis.patch.yml",
+    "dsh-dafeiyu-screen/assets",
+    "dsh-dafeiyu-screen/worker/*.py",
+    "dsh-dafeiyu-screen/worker/LICENSE",
+    "dsh-dafeiyu-screen/scripts",
+    "dsh-dafeiyu-screen/dependencies.json",
+    "dsh-dafeiyu-screen/*.cmd",
+    "dsh-dafeiyu-screen/npm-shrinkwrap.json"
   ],
   "scripts": {
-    "start": "node standalone.js",
-    "test": "node --test tests/*.test.js",
-    "bootstrap": "powershell.exe -NoProfile -ExecutionPolicy Bypass -File scripts/dependencies.ps1"
+    "start": "node dsh-dafeiyu-screen/standalone.js",
+    "test": "node --test dsh-dafeiyu-screen/tests/*.test.js"
   },
   "dependencies": {
     "yaml": "2.8.1"
   },
   "dsh": {
     "bundle": {
-      "patch": "./cordis.patch.yml"
+      "patch": "./dsh-dafeiyu-screen/cordis.patch.yml"
     },
     "client": {
       "platform": "web",

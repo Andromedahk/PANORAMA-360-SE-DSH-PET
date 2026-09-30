@@ -23,7 +23,7 @@
 从仓库根目录运行（需要 Python 和支持 libx264、libvpx-vp9 的 FFmpeg）：
 
 ```powershell
-python dsh-dafeiyu-screen/scripts/build_media.py --frames art/dafeiyu/horizontal-tablet/frames --background art/dafeiyu/background/room.png --ffmpeg C:/path/to/ffmpeg.exe
+python dsh-dafeiyu-screen/scripts/build_media.py --frames art/dafeiyu/horizontal-tablet/frames --ffmpeg C:/path/to/ffmpeg.exe
 ```
 
 省略 `--ffmpeg` 时沿用本机 KANALI 安装目录中的 FFmpeg。构建脚本也支持输入原始 ZIP。目录输入的校验值按帧序号依次拼接 ASCII 文件名与文件字节后计算 SHA-256；单张素材的校验值见 `manifest.json`。
@@ -31,3 +31,5 @@ python dsh-dafeiyu-screen/scripts/build_media.py --frames art/dafeiyu/horizontal
 ## 素材权利
 
 原始角色和背景由用户提供；水平平板版本在此基础上局部编辑。代码的 MIT 许可证不自动覆盖这些素材的再分发或商业授权，详见 [`THIRD_PARTY.md`](../../dsh-dafeiyu-screen/THIRD_PARTY.md)。
+
+1.1.0 默认使用插件 assets/background.png 的白色房间背景；原始 room.png 仅作为历史素材保留。

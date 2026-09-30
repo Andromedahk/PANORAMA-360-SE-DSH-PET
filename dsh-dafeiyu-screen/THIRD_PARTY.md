@@ -1,11 +1,10 @@
-# 第三方与素材说明
+# 第三方与素材
 
-- 屏幕协议及 Windows USB 客户端来自本项目 `kanali-open-screen`。其开源依据为 [DXVSI/Tryx-Linux-GUI](https://github.com/DXVSI/Tryx-Linux-GUI)，MIT；已保留 Fadli Arsani、DXVSI 的版权与许可证于 `LICENSE` 和 `worker/LICENSE`。
-- DSH 插件依据 [deepseek-ai/deepseek-harness](https://github.com/deepseek-ai/deepseek-harness) 官方文档与公开服务接口独立实现。未打包整个 DSH。
-- YAML 解析器 `yaml` 2.8.1：ISC，见依赖包内 LICENSE。
-- Windows 嵌入式 Python 3.10.11，来源 `https://www.python.org/ftp/python/3.10.11/python-3.10.11-embed-amd64.zip`，完整许可证见 `bin/python/LICENSE.txt`。
-- 便携包内 Node.js 24.19.0，完整许可证见 `runtime/LICENSE`；npm 插件包不携带 Node。
-- FFmpeg 仅用于本机构建视频，不分发 FFmpeg 程序。
-- 大肥鱼 60 帧序列和白色房间背景由用户提供。合成输出沿用原素材权利状态，**不自动授予第三方 MIT 素材授权**；再分发或商业使用这些视觉素材应由素材权利方决定。源文件校验值见 `assets/media.json`。
+- 插件与协议代码：MIT，见 LICENSE。
+- 大肥鱼角色原始帧由用户提供；手持平板经过局部编辑，角色权利不因代码 MIT 许可证自动转让。
+- 白色房间背景由内置 imagegen 生成、按用户要求调整透视；背景源文件随包保存在 assets/background.png。
+- yaml：ISC，由 npm 按锁文件下载安装。
+- Node.js、Python、DSH：各自上游许可证随下载运行环境/包保留，不打包进本插件发布文件。
+- FFmpeg：只在开发阶段编码成片，不随插件发布，也不是运行依赖。
 
-- 1.0.4 的水平平板为基于用户原始帧的 AI 局部编辑，统一应用于全部 60 帧；脸部、尾巴动画及改动区域之外的像素保留原素材。
+原始角色序列保存在仓库 art/dafeiyu，精简插件安装包只包含播放成片。

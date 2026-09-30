@@ -7,7 +7,7 @@ function paint(s){
   $('source').textContent=s.source;$('updated').textContent=s.updatedAt?new Date(s.updatedAt).toLocaleString('zh-CN'):'尚未读取';
   $('error').textContent=s.screen.error||s.balanceError||'';
   $('previewTime').textContent=s.updatedAt?`${s.balanceError?'STALE':'UPDATED'} / ${new Date(s.updatedAt).toLocaleTimeString('en-GB',{hour12:false})}`:'WAITING FOR BALANCE';
-  $('screenStatus').textContent=s.screen.playing?'屏幕正在显示':s.screen.error?'屏幕连接异常':'未连接屏幕';
+  $('screenStatus').textContent=s.screen.playing?'屏幕正在显示':s.screen.reconnecting?'正在自动重连':s.screen.error?'屏幕连接异常':'未连接屏幕';
   $('dot').classList.toggle('on',s.screen.playing);
   $('exit').hidden=s.mode==='dsh';
   $('start').textContent=s.screen.playing?'已在显示':'开始显示';

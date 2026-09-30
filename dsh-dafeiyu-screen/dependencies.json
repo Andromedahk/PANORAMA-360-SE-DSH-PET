@@ -1,0 +1,41 @@
+{
+  "platform": "win32-x64",
+  "node": {
+    "version": "24.21.0",
+    "minimum": "22.19.0",
+    "url": "https://nodejs.org/dist/v24.21.0/node-v24.21.0-win-x64.zip",
+    "sha256": "158f7685b44de51f6c0df1d153526cbcd3e1bc739a8dfc607721cef75de9e541",
+    "folder": "node-v24.21.0-win-x64",
+    "purpose": "DSH and standalone GUI; reuse a compatible installed Node when available"
+  },
+  "python": {
+    "version": "3.13.7",
+    "minimum": "3.10.0",
+    "url": "https://www.python.org/ftp/python/3.13.7/python-3.13.7-embed-amd64.zip",
+    "sha256": "f6cca216a359be84797cabb54149ce5e062afb16cc7567eb7fc51cacb2d86b65",
+    "purpose": "Windows USB and credential encryption; standard library only"
+  },
+  "dsh": {
+    "package": "@deepseek-ai/dsh",
+    "version": "0.2.0-rc.2",
+    "purpose": "Install only if no existing DSH CLI is available",
+    "installScripts": {
+      "@deepseek-ai/dsh-subprocess-local@0.2.0-rc.2": true,
+      "koffi@3.1.1": true,
+      "node-pty@1.2.0-beta.15": true,
+      "@google/genai@2.21.0": true,
+      "protobufjs@7.6.6": true
+    }
+  },
+  "npm": {
+    "yaml": "2.8.1"
+  },
+  "system": [
+    "Windows 10/11 x64",
+    "Windows PowerShell 5.1+",
+    "Windows inbox usbprint driver"
+  ],
+  "buildOnly": {
+    "ffmpeg": "Only needed to rebuild media; not needed to install or play the included H.264/MP4"
+  }
+}
