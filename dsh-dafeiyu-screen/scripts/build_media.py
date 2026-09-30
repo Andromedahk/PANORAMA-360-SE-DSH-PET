@@ -14,9 +14,9 @@ def source_hash(path):
 
 def main():
     p = argparse.ArgumentParser()
-    p.add_argument('--frames', required=True, help='ZIP archive or folder containing frame_000.png through frame_059.png')
+    p.add_argument('--frames', default=str(pathlib.Path(__file__).resolve().parents[1]/'assets/art/dafeiyu/horizontal-tablet/frames'), help='ZIP archive or folder containing frame_000.png through frame_059.png')
     p.add_argument('--background', default=str(pathlib.Path(__file__).resolve().parents[1]/'assets/background.png'))
-    p.add_argument('--ffmpeg', default=r'C:\Program Files\KANALI\resources\Connect\ffmpeg\ffmpeg.exe')
+    p.add_argument('--ffmpeg', default=shutil.which('ffmpeg') or 'ffmpeg')
     a = p.parse_args()
     out = pathlib.Path(__file__).resolve().parents[1] / 'assets'
     out.mkdir(exist_ok=True)

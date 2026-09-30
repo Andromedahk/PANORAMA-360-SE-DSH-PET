@@ -7,7 +7,7 @@
 可直接填写以下任意一种来源，无需先运行本项目安装脚本：
 
 - GitHub：`https://github.com/Andromedahk/PANORAMA-360-SE-DSH-PET.git`
-- 本地仓库根目录：`D:/codex/鼠标垫支架/kanali-open-screen`
+- 本地仓库根目录：在安装框选择或填写你下载后解压的仓库目录（包含 `package.json`）
 - 解压后的插件目录（包含 package.json）；原 `dsh-dafeiyu-screen` 子目录也支持。
 
 安装后启用 **PANORAMA-360-SE-DSH-PET**，在插件配置页打开控制台。DSH 负责安装 YAML 等 npm 依赖；首次显示时插件自动检查并下载 Python，用户无需预装 Python 或运行 CMD。
@@ -52,13 +52,13 @@
 python -X utf8 screen.py devices
 python -X utf8 screen.py info
 python -X utf8 screen.py catalog
-python -X utf8 screen.py prepare "D:\图片\wallpaper.png"
-python -X utf8 screen.py send "D:\图片\wallpaper.png"
+python -X utf8 screen.py prepare "dsh-dafeiyu-screen/assets/preview.png"
+python -X utf8 screen.py send "dsh-dafeiyu-screen/assets/preview.png"
 python -X utf8 screen.py restore "captures\before-test-config.bin"
 python -X utf8 -m unittest -v
 ```
 
-可用 `--ffmpeg "D:\ffmpeg\bin\ffmpeg.exe"` 指定转换工具。命令行完成后释放连接，不提供持续保活；长期使用请打开窗口版。
+可用 `--ffmpeg ffmpeg` 指定转换工具。命令行完成后释放连接，不提供持续保活；长期使用请打开窗口版。
 
 ## 通信记录
 
@@ -94,6 +94,6 @@ python -X utf8 inspect_capture.py "captures\20260930-035439-db56dc"
 
 新增 [PANORAMA-360-SE-DSH-PET](dsh-dafeiyu-screen/README.md)：2240×1080 摇尾动画循环、独立余额更新、DSH 插件和 Windows 图形控制台。视频已经合成为 30 FPS、60 帧、2 秒；余额变化不会重传或切换视频。
 
-原始帧、水平平板版帧、背景和动画预览已整理到 [图片素材目录](art/dafeiyu/README.md)，包含全部 120 张透明帧、素材校验清单和重新合成方法。
+原始帧、水平平板版帧、背景和动画预览已整理到 [图片素材目录](dsh-dafeiyu-screen/assets/art/dafeiyu/README.md)，包含全部 120 张透明帧、素材校验清单和重新合成方法。
 
 插件 1.1.0 使用确认的全屏白色房间背景和上下贴边角色；支持 USB 断线自动重连。精简安装包不捆绑 Node/Python，通过依赖表按需下载、校验并缓存。详见 [依赖表](dsh-dafeiyu-screen/DEPENDENCIES.md)。

@@ -11,7 +11,7 @@ export async function apply(ctx) {
   // Optional injection keeps a manual API Key usable in minimal profiles too.
   ctx.inject(['deepseekAccount'], accountCtx=>{
     const reader=async()=>{
-      const b=await accountCtx.deepseekAccount.getBalance({version:'1.1.1',locale:'zh-CN',timezoneOffsetSeconds:-new Date().getTimezoneOffset()*60});
+      const b=await accountCtx.deepseekAccount.getBalance({version:'1.1.2',locale:'zh-CN',timezoneOffsetSeconds:-new Date().getTimezoneOffset()*60});
       if (b===null) return null;
       if (b.status!=='ready') throw new Error('DSH 余额查询失败，稍后重试');
       return {value:money([...walletValues(b.value,'balance'),...walletValues(b.bonusWallets,'balance',false)]),source:'DSH 登录账号'};

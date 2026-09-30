@@ -19,7 +19,7 @@
   },
   "sources": {
     "background.png": "10b61d56c199c22b571ea436055232c10e0c68e634d2f5495fc240c2ee01121c",
-    "frames": "../../art/dafeiyu/horizontal-tablet/frames"
+    "frames": "assets/art/dafeiyu/horizontal-tablet/frames"
   },
   "h264Sha256": "2c97f6c6f48cb915dfbd83843df7199a9cd6c77b8e1490810190f54974e3f58f",
   "overlay": {

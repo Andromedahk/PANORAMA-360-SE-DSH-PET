@@ -7,7 +7,7 @@ Windows 展域 360 SE（PASE，USB 391a:1021）屏幕桌宠插件。白色房间
 可直接填写以下任意一种来源，无需先运行本项目安装脚本：
 
 - GitHub：`https://github.com/Andromedahk/PANORAMA-360-SE-DSH-PET.git`
-- 本地仓库根目录：`D:/codex/鼠标垫支架/kanali-open-screen`
+- 本地仓库根目录：在安装框选择或填写你下载后解压的仓库目录（包含 `package.json`）
 - 解压后的插件目录（包含 package.json）；原 `dsh-dafeiyu-screen` 子目录也支持。
 
 安装后启用 **PANORAMA-360-SE-DSH-PET**，在插件配置页打开控制台。DSH 负责安装 YAML 等 npm 依赖；首次显示时插件自动检查并下载 Python，用户无需预装 Python 或运行 CMD。
@@ -20,7 +20,7 @@ Windows 展域 360 SE（PASE，USB 391a:1021）屏幕桌宠插件。白色房间
 
 ## 从零安装
 
-1. 下载并解压 `PANORAMA-360-SE-DSH-PET-1.1.1-windows-x64.zip` 到可写文件夹。
+1. 下载并解压 `PANORAMA-360-SE-DSH-PET-1.1.2-windows-x64.zip` 到可写文件夹。
 2. 双击 `安装到DSH.cmd`。脚本按 `dependencies.json` 检查 Node、Python、npm 包和 DSH；缺失时自动下载到用户目录，不需要管理员权限。
 3. 在 DSH 插件页启用 **PANORAMA-360-SE-DSH-PET**。已有旧版 `dsh-dafeiyu-screen` 时，先停用旧版，避免占用同一控制台端口。
 4. 退出 KANALI，连接 USB，在插件控制台点击“开始显示”。默认读取 DSH 登录账户；也可保存 DeepSeek API Key。
@@ -32,7 +32,7 @@ Windows 展域 360 SE（PASE，USB 391a:1021）屏幕桌宠插件。白色房间
 已安装 DSH 的用户也可从插件页选择本地 `.tgz` 包，或执行：
 
 ```powershell
-dsh plugin --profile desktop add file:C:/path/panorama-360-se-dsh-pet-1.1.1.tgz
+dsh plugin --profile desktop add file:./panorama-360-se-dsh-pet-1.1.2.tgz
 ```
 
 ## 依赖与缓存
@@ -62,10 +62,10 @@ powershell -NoProfile -ExecutionPolicy Bypass -File scripts/package.ps1
 从帧序列重建素材才需要 FFmpeg：
 
 ```powershell
-python scripts/build_media.py --frames ../art/dafeiyu/horizontal-tablet/frames --ffmpeg C:/path/ffmpeg.exe
+python scripts/build_media.py
 ```
 
-默认背景是 `assets/background.png`，与验收画面一致。依赖安装器不自动下载仅供开发的 FFmpeg。精简发布包包含代码、依赖清单及成片，不含运行环境、node_modules、原始 60 张帧或下载缓存。
+默认背景是 `assets/background.png`，与验收画面一致。依赖安装器不自动下载仅供开发的 FFmpeg。精简发布包包含代码、依赖清单及成片，包含全部 120 张原始/修订帧、背景、参考图和预览图；不含运行环境、node_modules 或下载缓存。
 
 支持范围：Windows 10/11 x64、已实测的 PASE 屏幕。首次安装需要可访问 nodejs.org、python.org 和 npm 注册表。真实断电、面板亮度与播放流畅度仍需实体屏幕验收。
 
