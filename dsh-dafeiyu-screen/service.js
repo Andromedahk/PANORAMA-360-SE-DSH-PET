@@ -133,8 +133,8 @@ export class ScreenService {
       if (op==='settings') {
         this.settings=validateSettings(data);
         const tmp=join(HOME,'settings.tmp');await writeFile(tmp,JSON.stringify(this.settings,null,2));await rename(tmp,join(HOME,'settings.json'));this.schedule();
-      } else if (op==='start') {
-        this.state.screen=await this.worker.request('start',{media:join(ROOT,'assets','tail-swing.h264'),value:this.state.value||'--',status:this.overlayStatus()});
+      } else if (op==='start'||op==='repairVideo') {
+        this.state.screen=await this.worker.request('start',{media:join(ROOT,'assets','tail-swing.h264'),value:this.state.value||'--',status:this.overlayStatus(),...(op==='repairVideo'?{forceUpload:true}:{})});
         this.enabled=true;void this.refresh();
       } else if (op==='stop'||op==='restore') {
         this.enabled=false;clearTimeout(this.timer);this.state.nextRefreshAt=null;

@@ -28,7 +28,7 @@ async function action(op,data={},message){
   catch(e){toast(e.message);$('error').textContent=e.message;}
   finally{busy=false;}
 }
-for(const op of ['start','stop','restore','refresh','clearKey'])$(op).onclick=()=>action(op,{},({start:'动画已发送到屏幕，余额将自动更新',stop:'已释放连接；屏幕后续显示取决于待机设置',restore:'已恢复原显示',clearKey:'已移除 Key，重新读取 DSH 凭证'})[op]);
+for(const op of ['start','stop','restore','refresh','clearKey','repairVideo'])$(op).onclick=()=>action(op,{},({repairVideo:'视频已重新上传并切换，余额将继续更新',start:'动画已发送到屏幕，余额将自动更新',stop:'已释放连接；屏幕后续显示取决于待机设置',restore:'已恢复原显示',clearKey:'已移除 Key，重新读取 DSH 凭证'})[op]);
 function saveSettings(){
   if(!$('interval').reportValidity())return;
   return action('settings',{pollSeconds:Number($('interval').value),autoStart:$('autoStart').checked},'刷新设置已保存并生效');

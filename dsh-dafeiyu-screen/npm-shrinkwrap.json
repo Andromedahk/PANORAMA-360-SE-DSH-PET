@@ -1,12 +1,12 @@
 {
   "name": "panorama-360-se-dsh-pet",
-  "version": "1.1.4",
+  "version": "1.1.5",
   "lockfileVersion": 2,
   "requires": true,
   "packages": {
     "": {
       "name": "panorama-360-se-dsh-pet",
-      "version": "1.1.4",
+      "version": "1.1.5",
       "license": "MIT",
       "dependencies": {
         "yaml": "2.8.1"

@@ -8,6 +8,19 @@ class FakeWorker {
   async request(op,data={}){this.ops.push({op,...data});if(op==='readKey')return {key:null};if(op==='start')this.playing=true;if(op==='stop'||op==='restore')this.playing=false;return {playing:this.playing,connected:this.playing};}
   async close(){this.closed=true;}
 }
+
+test('explicit video repair requests a fresh upload and keeps balance scheduling active',async()=>{
+  const worker=new FakeWorker();
+  const service=new ScreenService({worker,accountReader:async()=>({value:'18.42',source:'test'})});
+  try {
+    await service.action('repairVideo');await service.inflight;
+    assert.equal(worker.ops.find(x=>x.op==='start').forceUpload,true);
+    assert.equal(service.enabled,true);
+    assert.ok(service.state.nextRefreshAt);
+    await service.refresh();
+    assert.equal(worker.ops.filter(x=>x.op==='start').length,1);
+  } finally {await service.dispose();}
+});
 test('periodic balances never reapply/reupload video; errors keep stale value',async()=>{
   const worker=new FakeWorker();let calls=0,fail=false;
   const service=new ScreenService({worker,accountReader:async()=>{calls++;if(fail)throw new Error('network unavailable');return{value:'18.42',source:'test'};}});

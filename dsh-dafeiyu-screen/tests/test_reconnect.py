@@ -1,4 +1,4 @@
-import pathlib, tempfile, unittest, sys
+import pathlib, tempfile, unittest, sys, hashlib
 from unittest.mock import patch
 sys.path.insert(0,str(pathlib.Path(__file__).resolve().parents[1]/'worker'))
 import bridge
@@ -24,6 +24,35 @@ class FakeClient:
         return b''
 
 class RecoveryTests(unittest.TestCase):
+    def test_missing_selected_video_gets_new_name_and_reconnect_reuses_it(self):
+        with tempfile.TemporaryDirectory() as d,patch.object(bridge,'HOME',pathlib.Path(d)),patch.object(bridge.screen,'Client',FakeClient):
+            media=pathlib.Path(d)/'test.h264';media.write_bytes(b'test-media')
+            digest=hashlib.sha256(media.read_bytes()).hexdigest()[:16]
+            missing=f'dsh-fish-{digest}.mp4.h264_2240x1080'
+            FakeClient.uploaded=[];FakeClient.selected=missing;FakeClient.layout=b''
+            b=bridge.Bridge();self.assertTrue(b.handle({'op':'start','media':str(media)})['playing'])
+            self.assertNotEqual(FakeClient.selected,missing)
+            replacement=FakeClient.selected;b.close()
+            restarted=bridge.Bridge()
+            self.assertTrue(restarted.handle({'op':'start','media':str(media)})['playing'])
+            self.assertEqual(FakeClient.selected,replacement)
+            self.assertEqual(len(FakeClient.uploaded),1)
+            # Explicit black-video repair replaces the decoder path even when
+            # the catalogue still reports the old copy as present.
+            self.assertTrue(restarted.handle({'op':'start','media':str(media),'forceUpload':True})['playing'])
+            self.assertNotEqual(FakeClient.selected,replacement)
+            self.assertEqual(len(FakeClient.uploaded),2)
+            self.assertNotIn('forceUpload',restarted.desired)
+            restarted.close()
+
+    def test_upload_ack_without_catalog_entry_does_not_report_playing(self):
+        with tempfile.TemporaryDirectory() as d,patch.object(bridge,'HOME',pathlib.Path(d)),patch.object(bridge.screen,'Client',FakeClient),patch.object(FakeClient,'catalog',return_value=[]):
+            media=pathlib.Path(d)/'test.h264';media.write_bytes(b'test-media')
+            FakeClient.uploaded=[];FakeClient.selected='original.mp4';FakeClient.layout=b''
+            b=bridge.Bridge();state=b.handle({'op':'start','media':str(media)})
+            self.assertFalse(state['playing']);self.assertTrue(state['reconnecting'])
+            self.assertIn('素材目录',state['error']);b.close()
+
     def test_startup_waits_for_kanali_exit_then_connects_automatically(self):
         with tempfile.TemporaryDirectory() as d,patch.object(bridge,'HOME',pathlib.Path(d)):
             FakeClient.uploaded=[];FakeClient.selected='original.mp4';FakeClient.layout=b''

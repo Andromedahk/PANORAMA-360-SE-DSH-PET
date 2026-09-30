@@ -1,5 +1,5 @@
 """Serial USB owner. Newline JSON on stdin/stdout; no credentials in diagnostics."""
-import base64, ctypes, hashlib, json, os, pathlib, queue, sys, threading, time
+import base64, ctypes, hashlib, json, os, pathlib, queue, sys, threading, time, uuid
 from ctypes import wintypes
 import screen
 from protocol import field, fields, get, replace, frame, take_frame
@@ -95,15 +95,38 @@ class Bridge:
         c=self.client
         path=pathlib.Path(req['media']).resolve(strict=True)
         digest=hashlib.sha256(path.read_bytes()).hexdigest()[:16]
-        remote=f'dsh-fish-{digest}.mp4.h264_2240x1080'
+        prefix=f'dsh-fish-{digest}'
+        remote=f'{prefix}.mp4.h264_2240x1080'
         previous=c.command(104,expected=504); previous_run=c.command(105,expected=505)
         # Preserve the original across restarts while our own clip is selected.
         old_name=get(get(previous,3,b''),3,b'').decode(errors='replace')
         if not old_name.startswith(('dsh-fish-','room-pet-','grid-','pet-','white-room-')) or not (HOME/'restore-config.bin').exists():
             (HOME/'restore-config.bin').write_bytes(previous)
             (HOME/'restore-layout.bin').write_bytes(previous_run)
-        exists=any(pathlib.PurePosixPath(x['path'].replace('\\','/')).name==remote and x['size']==path.stat().st_size for x in c.catalog())
-        if not exists: c.upload(path,remote,lambda _:None)
+        catalog=c.catalog()
+        candidates=[pathlib.PurePosixPath(x['path'].replace('\\','/')).name for x in catalog
+                    if not x.get('preset') and x['size']==path.stat().st_size
+                    and (pathlib.PurePosixPath(x['path'].replace('\\','/')).name==remote
+                         or (pathlib.PurePosixPath(x['path'].replace('\\','/')).name.startswith(prefix+'-')
+                             and x['path'].endswith('.mp4.h264_2240x1080')))]
+        force_upload=bool(req.get('forceUpload'))
+        if candidates and not force_upload:
+            requested=req.get('remote')
+            remote=requested if requested in candidates else old_name if old_name in candidates else candidates[0]
+        else:
+            # Replacing the bytes under the selected name may leave the firmware's
+            # decoder on a missing/stale file. A new path forces it to open the clip.
+            if force_upload or old_name==remote:
+                remote=f'{prefix}-{uuid.uuid4().hex[:8]}.mp4.h264_2240x1080'
+            c.upload(path,remote,lambda _:None)
+            if not any(pathlib.PurePosixPath(x['path'].replace('\\','/')).name==remote
+                       and x['size']==path.stat().st_size for x in c.catalog()):
+                raise RuntimeError('视频上传后未在屏幕素材目录中通过校验，正在重试')
+            # A reconnect reuses this verified copy; only an explicit repair
+            # requests another upload.
+            if self.desired:
+                self.desired.pop('forceUpload',None)
+                self.desired['remote']=remote
         work=get(previous,3); display=get(previous,5)
         if work is None or display is None: raise RuntimeError('Incomplete screen configuration')
         config=replace(previous,{3:replace(work,{1:0,2:0,3:remote}),5:replace(display,{1:1})})
@@ -130,8 +153,8 @@ class Bridge:
         if op=='stop': self.close(); return self.status()
         if op=='start':
             pathlib.Path(req['media']).resolve(strict=True)
-            self.desired={k:req[k] for k in ('media','value','status') if k in req}
-            if self.active: return self.status()
+            self.desired={k:req[k] for k in ('media','value','status','forceUpload') if k in req}
+            if self.active and not req.get('forceUpload'): return self.status()
             try: return self.start_display(self.desired)
             except Exception as error:
                 self.connection_failed(error)
